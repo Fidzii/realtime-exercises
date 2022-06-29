@@ -17,11 +17,28 @@ chat.addEventListener("submit", function (e) {
 async function postNewMsg(user, text) {
   // post to /poll a new message
   // write code here
+  try {
+    await fetch("/poll", {
+      method: "POST",
+      body: JSON.stringify({ user, text }),
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (err) {
+    console.error("error while posting:", err);
+  }
 }
 
 async function getNewMsgs() {
   // poll the server
   // write code here
+  try {
+    const res = await (await fetch("/poll")).json();
+    allChat = res;
+  } catch (err) {
+    console.error("error while polling:", err);
+  }
+  render();
+  setTimeout(getNewMsgs, INTERVAL);
 }
 
 function render() {
