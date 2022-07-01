@@ -11,7 +11,8 @@ chat.addEventListener("submit", function (e) {
 });
 
 async function postNewMsg(user, text) {
-  // code goes here
+  if ([2, 3].includes(ws.readyState)) return;
+  ws.send(JSON.stringify({ user, text }));
 }
 
 /*
@@ -19,6 +20,24 @@ async function postNewMsg(user, text) {
  * your code goes here
  *
  */
+
+const ws = new WebSocket("ws://localhost:8080", ["json"]);
+
+ws.addEventListener("open", () => {
+  console.log("connected to ws");
+  presence.innerText = "🟢";
+});
+
+ws.addEventListener("close", () => {
+  console.log("closed connection to ws");
+  presence.innerText = "🔴";
+});
+
+ws.addEventListener("message", (e) => {
+  const data = JSON.parse(event.data);
+  allChat = data;
+  render();
+});
 
 function render() {
   const html = allChat.map(({ user, text }) => template(user, text));
