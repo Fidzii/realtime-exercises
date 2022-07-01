@@ -10,6 +10,22 @@ let allChat = [];
  * Code goes here
  *
  */
+const socketio = io("http://localhost:8080");
+
+socketio.on("connect", () => {
+  console.log("connected");
+  presence.innerText = "🟢";
+});
+
+socketio.on("disconnect", () => {
+  console.log("disconnected");
+  presence.innerText = "🔴";
+});
+
+socketio.on("msg:get", (data) => {
+  allChat = data;
+  render();
+});
 
 chat.addEventListener("submit", function (e) {
   e.preventDefault();
@@ -23,6 +39,7 @@ async function postNewMsg(user, text) {
    * Code goes here
    *
    */
+  socketio.emit("msg:post", { user, text });
 }
 
 function render() {

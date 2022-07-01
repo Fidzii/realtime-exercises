@@ -24,6 +24,22 @@ const server = http.createServer((request, response) => {
  * Code goes here
  *
  */
+const socketio = new Server(server, {});
+
+socketio.on("connection", (socket) => {
+  console.log("new connection " + socket.id);
+  socket.emit("msg:get", getMsgs());
+
+  socket.on("msg:post", (data) => {
+    const { user, text } = data;
+    msg.push({ user, text, time: Date.now() });
+    socketio.emit("msg:get", getMsgs());
+  });
+
+  socket.on("disconnect", () => {
+    console.log("closed connection " + socket.id);
+  });
+});
 
 const port = process.env.PORT || 8080;
 server.listen(port, () =>
